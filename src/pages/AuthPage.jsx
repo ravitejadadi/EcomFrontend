@@ -166,8 +166,8 @@ const AuthPage = () => {
                 if (!otp.trim()) {
                     errors.otp = 'Verification code is required.';
                     clean = false;
-                } else if (!/^\d{4}$/.test(otp.trim())) {
-                    errors.otp = 'Enter the 4-digit code sent to your phone.';
+                } else if (!/^\d{6}$/.test(otp.trim())) {
+                    errors.otp = 'Enter the 6-digit code sent to your phone.';
                     clean = false;
                 }
             }
@@ -202,7 +202,7 @@ const AuthPage = () => {
                 if (!otpSent) {
                     const res = await apiFetch('/auth/send-otp', {
                         method: 'POST',
-                        body: JSON.stringify({ phone: phone.slice(2) }), // strip 91
+                        body: JSON.stringify({ phone: `+${phone}` }), // E.164: +91XXXXXXXXXX
                     });
                     const data = await res.json();
                     if (!res.ok) {
@@ -214,12 +214,12 @@ const AuthPage = () => {
                     const masked = local.slice(0, 2) + 'XXXXXX' + local.slice(-2);
                     setSuccess({
                         title: 'OTP sent!',
-                        description: `A 4-digit code was sent to +91 ${masked}. It expires in 5 minutes.`,
+                        description: `A 6-digit code was sent to +91 ${masked}. It expires in 10 minutes.`,
                     });
                 } else {
                     const res = await apiFetch('/auth/verify-otp', {
                         method: 'POST',
-                        body: JSON.stringify({ phone: phone.slice(2), otp }),
+                        body: JSON.stringify({ phone: `+${phone}`, otp }),
                     });
                     const data = await res.json();
                     if (!res.ok) {
@@ -520,7 +520,7 @@ const AuthPage = () => {
                                     {otpSent && (
                                         <div className="animate-slide-in">
                                             <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1.5" htmlFor="otp">
-                                                4-Digit Verification Code
+                                                6-Digit Verification Code
                                             </label>
                                             <div className={`relative flex items-center border rounded-xl overflow-hidden bg-white transition-all duration-200 ${
                                                 fe.otp
@@ -532,17 +532,18 @@ const AuthPage = () => {
                                                     id="otp"
                                                     type="text"
                                                     inputMode="numeric"
-                                                    maxLength={4}
+                                                    maxLength={6}
                                                     value={otp}
                                                     onChange={(e) => {
-                                                        setOtp(e.target.value.replace(/\D/g, '').slice(0, 4));
+                                                        setOtp(e.target.value.replace(/\D/g, '').slice(0, 6));
                                                         clearFieldError('otp');
+                                                        setSuccess(null);
                                                     }}
                                                     onBlur={() => {
                                                         if (!otp.trim()) setFieldError('otp', 'Verification code is required.');
-                                                        else if (!/^\d{4}$/.test(otp.trim())) setFieldError('otp', 'Enter the 4-digit code sent to your phone.');
+                                                        else if (!/^\d{6}$/.test(otp.trim())) setFieldError('otp', 'Enter the 6-digit code sent to your phone.');
                                                     }}
-                                                    placeholder="_ _ _ _"
+                                                    placeholder="_ _ _ _ _ _"
                                                     className="flex-1 py-3 px-3 text-sm outline-none bg-transparent tracking-[0.4em] font-mono"
                                                 />
                                             </div>
@@ -568,7 +569,7 @@ const AuthPage = () => {
                                         )}
                                         <button
                                             type="submit"
-                                            disabled={loading || !!success}
+                                            disabled={loading || !!success || (otpSent && otp.length < 6)}
                                             className="flex-1 flex items-center justify-center gap-2 py-3 bg-black text-white text-sm font-bold uppercase tracking-wide rounded-xl hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                                         >
                                             {loading ? (
