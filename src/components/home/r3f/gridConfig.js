@@ -1,0 +1,51 @@
+export const DEFAULT_CONFIG = {
+    gridCols: 8,
+    itemSize: 2.5,
+    gap: 0.4,
+
+    dragSpeed: 2.2,
+    dampFactor: 0.2,
+    tiltFactor: 0.08,
+    clickThreshold: 5,
+    dragResistance: 0.25,
+
+    zoomIn: 12,
+    zoomOut: 31,
+    zoomDamp: 0.25,
+
+    focusScale: 1.5,
+    dimScale: 0.5,
+    dimOpacity: 0.15,
+
+    curvatureStrength: 0.06,
+    rotationStrength: 0,
+
+    cullDistance: 14,
+
+    fogNear: 19,
+    fogFar: 100,
+
+    enterStartOpacity: 0.0,
+    enterStartZ: -50,
+    exitEndZ: 20,
+    transitionZDamp: 0.25,
+    enterOpacityDamp: 0.85,
+    exitOpacityDamp: 0.15,
+    enterStaggerDelay: 400,
+    exitStaggerDelay: 300,
+    cleanupTimeout: 700,
+    exitSpreadY: 0.5,
+    enterSpreadY: 1,
+    transitionYDamp: 0.08,
+    filterOpacityDamp: 0.06,
+    filterScaleTarget: 0.5,
+
+    bgColor: '#c8c8c8',
+    bgOpacity: 0.4,
+    bgSpeed: 0.05,
+    bgScale: 3.0,
+    bgLineThickness: 0.03,
+};
+
+export let CONFIG = { ...DEFAULT_CONFIG };
+Object.assign(CONFIG, DEFAULT_CONFIG);
