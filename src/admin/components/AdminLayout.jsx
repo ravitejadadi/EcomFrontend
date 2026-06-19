@@ -101,7 +101,7 @@ const AdminLayout = () => {
                 <div className="mt-8 pt-6 border-t border-neutral-800 space-y-4">
                     <div className="text-sm px-4">
                         <p className="text-neutral-500 text-xs">Logged in as</p>
-                        <p className="font-semibold text-neutral-200 truncate">{adminName}</p>
+                        <p className="font-semibold text-neutral-200 truncate">The Elegant</p>
                     </div>
 
                     <Link
