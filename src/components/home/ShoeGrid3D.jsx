@@ -202,26 +202,6 @@ export default function ShoeGrid3D({ products = [] }) {
 
     return (
         <section style={{ background: '#f0f0f0', position: 'relative', overflow: 'hidden' }}>
-            {/* HTML heading above the canvas */}
-            <div style={{ textAlign: 'center', padding: '64px 24px 32px', position: 'relative', zIndex: 2 }}>
-                <p style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#888', marginBottom: '12px' }}>
-                    Footwear Collection
-                </p>
-                <h2 style={{
-                    fontSize: 'clamp(48px, 8vw, 96px)',
-                    fontWeight: '900', lineHeight: 1,
-                    fontFamily: 'var(--font-display, system-ui, sans-serif)',
-                    letterSpacing: '-0.03em', margin: 0,
-                }}>
-                    STEP INTO
-                    <br />
-                    <span style={{ color: '#ccc' }}>STYLE</span>
-                </h2>
-                <p style={{ color: '#888', marginTop: '20px', fontSize: '14px' }}>
-                    Performance running · Iconic lifestyle · Motorsport heritage
-                </p>
-            </div>
-
             {/* Three.js canvas */}
             <div
                 style={{

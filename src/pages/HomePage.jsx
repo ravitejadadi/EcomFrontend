@@ -2,10 +2,8 @@ import Hero from '../components/home/Hero';
 import ProductCard from '../components/product/ProductCard';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, TrendingUp, Award, Dumbbell, Trophy, Shirt } from 'lucide-react';
-import { useEffect, useRef, useState, lazy, Suspense } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { apiFetch } from '../utils/api';
-
-const ShoeGrid3D = lazy(() => import('../components/home/ShoeGrid3D'));
 
 // Scroll-reveal wrapper — transitions only opacity + transform (composited, no layout cost)
 const AnimatedSection = ({ children, className = '' }) => {
@@ -77,8 +75,6 @@ const CategorySection = ({ title, subtitle, icon: Icon, products, link, bgColor 
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
-    const [show3D, setShow3D] = useState(false);
-    const sentinel3D = useRef(null);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -95,14 +91,6 @@ const HomePage = () => {
             setProducts(fallback);
         };
         fetchProducts();
-    }, []);
-
-    // Load the heavy 3D experience automatically shortly after page mount (without requiring scroll)
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShow3D(true);
-        }, 600);
-        return () => clearTimeout(timer);
     }, []);
 
     const runningShoes = products.filter(p => p.category === 'Running').slice(0, 4);
@@ -188,24 +176,6 @@ const HomePage = () => {
                 link="/collections/running"
                 bgColor="bg-white"
             />
-
-            {/* 3D Shoe Grid — only loaded when user scrolls to it */}
-            <div ref={sentinel3D}>
-                {show3D ? (
-                    <Suspense fallback={
-                        <div className="bg-neutral-100 py-20 text-center" style={{ minHeight: '400px' }}>
-                            <div className="w-8 h-8 border-2 border-neutral-300 border-t-black rounded-full animate-spin mx-auto mb-4" />
-                            <p className="text-neutral-500 text-sm">Loading 3D Experience...</p>
-                        </div>
-                    }>
-                        <ShoeGrid3D products={products} />
-                    </Suspense>
-                ) : (
-                    <div className="bg-neutral-100 py-20 text-center" style={{ minHeight: '400px' }}>
-                        <p className="text-neutral-400 text-sm">Scroll down for 3D experience</p>
-                    </div>
-                )}
-            </div>
 
             {/* Men's Clothing */}
             <CategorySection

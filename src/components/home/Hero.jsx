@@ -90,10 +90,6 @@ const Hero = () => {
                             : { loading: 'lazy', decoding: 'async' }
                         )}
                     />
-                    <div className={`absolute inset-0 ${slide.theme === 'dark'
-                        ? 'bg-gradient-to-r from-black via-black/70 to-transparent'
-                        : 'bg-gradient-to-r from-white/90 via-white/60 to-transparent'
-                    }`} />
                 </div>
 
                 {/* Content */}

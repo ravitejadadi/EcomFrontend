@@ -95,26 +95,9 @@ const Navbar = () => {
         'Sports': {
             featured: [
                 { name: 'Running', href: '/collections/running', highlight: true },
-                { name: 'Training', href: '/collections/training' },
-                { name: 'Football', href: '/collections/football' },
+                { name: 'Badminton', href: '/collections/badminton' },
             ],
-            categories: [
-                { name: 'Cricket', href: '/collections/cricket' },
-                { name: 'Basketball', href: '/collections/basketball' },
-                { name: 'Golf', href: '/collections/golf' },
-            ]
-        },
-        'Lifestyle': {
-            featured: [
-                { name: 'Sneakers', href: '/collections/sneakers', highlight: true },
-                { name: 'Speedcat', href: '/collections/speedcat' },
-                { name: 'Suede', href: '/collections/suede' },
-            ],
-            categories: [
-                { name: 'Palermo', href: '/collections/palermo' },
-                { name: 'RS Collection', href: '/collections/rs-collection' },
-                { name: 'Mostro', href: '/collections/mostro' },
-            ]
+            categories: []
         },
         'Kids': {
             featured: [
@@ -135,7 +118,6 @@ const Navbar = () => {
         { name: 'Men', hasMenu: true },
         { name: 'Women', hasMenu: true },
         { name: 'Sports', hasMenu: true },
-        { name: 'Lifestyle', hasMenu: true },
         { name: 'Kids', hasMenu: true },
         { name: 'Sale', href: '/collections/sale', highlight: true },
     ];
@@ -185,7 +167,7 @@ const Navbar = () => {
                                 <img
                                     src={theElegantLogo}
                                     alt="The Elegant"
-                                    className="h-20 md:h-24 w-30"
+                                    className="h-24 md:h-28 w-36"
                                 />
                             )}
                         </Link>
