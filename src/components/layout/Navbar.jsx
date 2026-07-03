@@ -4,7 +4,7 @@ import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown } from 'lucide-r
 import { useCart } from '../../context/CartContext';
 import theElegantLogo from '../../assets/images/the_elegant_logo.png';
 
-const womenLogo = '/Womenlogo.png';
+const womenLogo = '/womenslogo.png';
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -167,7 +167,7 @@ const Navbar = () => {
                                 <img
                                     src={theElegantLogo}
                                     alt="The Elegant"
-                                    className="h-24 md:h-28 w-36"
+                                    className="h-24 md:h-36 w-34"
                                 />
                             )}
                         </Link>
