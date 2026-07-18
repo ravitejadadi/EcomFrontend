@@ -2,9 +2,8 @@ import { useState, useCallback } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import {
     Eye, EyeOff, User, Mail, Lock,
-    AlertCircle, CheckCircle, ArrowRight, ChevronLeft,
+    AlertCircle, CheckCircle, ArrowRight, ChevronLeft, Phone, Key
 } from 'lucide-react';
-import { GoogleLogin } from '@react-oauth/google';
 import { apiFetch } from '../utils/api';
 
 // ─── Validation helpers ────────────────────────────────────────────────────────
@@ -71,17 +70,31 @@ function FieldError({ msg }) {
 
 // ─── Main ──────────────────────────────────────────────────────────────────────
 
-const VALID_MODES = ['email-login', 'social', 'register'];
+const VALID_MODES = ['email-login', 'otp', 'register'];
 
 const AuthPage = () => {
     const [searchParams] = useSearchParams();
     const modeParam = searchParams.get('mode');
-    const [authMode, setAuthMode] = useState(VALID_MODES.includes(modeParam) ? modeParam : 'email-login');
+    const [authMode, setAuthMode] = useState(VALID_MODES.includes(modeParam) ? (modeParam === 'social' ? 'otp' : modeParam) : 'email-login');
     const [showPassword, setShowPassword] = useState(false);
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    // OTP specific states
+    const [phone, setPhone] = useState('');
+    const [otpCode, setOtpCode] = useState('');
+    const [otpSent, setOtpSent] = useState(false);
+    const [needRegistration, setNeedRegistration] = useState(false);
+    const [regName, setRegName] = useState('');
+    const [regEmail, setRegEmail] = useState('');
+
+    // OTP inline errors
+    const [phoneError, setPhoneError] = useState('');
+    const [otpCodeError, setOtpCodeError] = useState('');
+    const [regNameError, setRegNameError] = useState('');
+    const [regEmailError, setRegEmailError] = useState('');
 
     // Per-field inline errors
     const [fe, setFe] = useState({ name: '', email: '', password: '' });
@@ -108,6 +121,18 @@ const AuthPage = () => {
         setFe({ name: '', email: '', password: '' });
         setForgotEmail('');
         setForgotEmailError('');
+        
+        // Reset OTP states
+        setPhone('');
+        setOtpCode('');
+        setOtpSent(false);
+        setNeedRegistration(false);
+        setRegName('');
+        setRegEmail('');
+        setPhoneError('');
+        setOtpCodeError('');
+        setRegNameError('');
+        setRegEmailError('');
     };
 
     const handleForgotPassword = async (e) => {
@@ -135,21 +160,120 @@ const AuthPage = () => {
         }
     };
 
-    // Google OAuth handlers
-    const handleGoogleSuccess = async (credentialResponse) => {
+    const handleSendOtp = async (e) => {
+        if (e) e.preventDefault();
         setGlobalError('');
         setSuccess(null);
+        setPhoneError('');
+
+        const trimmedPhone = phone.trim();
+        if (!trimmedPhone) {
+            setPhoneError('Phone number is required.');
+            return;
+        }
+        if (!/^\d{10}$/.test(trimmedPhone)) {
+            setPhoneError('Enter a valid 10-digit mobile number.');
+            return;
+        }
+
         setLoading(true);
         try {
-            const res = await apiFetch('/auth/google', {
+            const res = await apiFetch('/auth/otp/send', {
                 method: 'POST',
-                body: JSON.stringify({ credential: credentialResponse.credential }),
+                body: JSON.stringify({ phone: `91${trimmedPhone}` }),
             });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.message || 'Google sign-in failed. Please try again.');
+            if (!res.ok) throw new Error(data.message || 'Failed to send OTP.');
+            setOtpSent(true);
+            setSuccess({ title: 'OTP Sent!', description: 'Please check your mobile phone for the verification code.' });
+        } catch (err) {
+            setGlobalError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyOtp = async (e) => {
+        if (e) e.preventDefault();
+        setGlobalError('');
+        setSuccess(null);
+        setOtpCodeError('');
+
+        const trimmedOtp = otpCode.trim();
+        if (!trimmedOtp) {
+            setOtpCodeError('Verification code is required.');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await apiFetch('/auth/otp/verify', {
+                method: 'POST',
+                body: JSON.stringify({ phone: `91${phone.trim()}`, otp: trimmedOtp }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'OTP verification failed. Please try again.');
+
+            if (data.status === 'need_registration') {
+                setNeedRegistration(true);
+                setSuccess({ title: 'OTP Verified!', description: 'Please complete your profile to finish registration.' });
+            } else {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                setSuccess({ title: 'Welcome back!', description: 'Verification successful. Redirecting…' });
+                setTimeout(() => {
+                    if (data.user.role === 'admin') navigate('/admin/dashboard');
+                    else navigate(from, { replace: true });
+                }, 1200);
+            }
+        } catch (err) {
+            setGlobalError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleOtpRegister = async (e) => {
+        if (e) e.preventDefault();
+        setGlobalError('');
+        setSuccess(null);
+        setRegNameError('');
+        setRegEmailError('');
+
+        let hasError = false;
+        const nameErr = validateName(regName);
+        if (nameErr) {
+            setRegNameError(nameErr);
+            hasError = true;
+        }
+        const emailErr = validateEmail(regEmail);
+        if (emailErr) {
+            setRegEmailError(emailErr);
+            hasError = true;
+        }
+
+        if (hasError) return;
+
+        setLoading(true);
+        try {
+            const res = await apiFetch('/auth/otp/register', {
+                method: 'POST',
+                body: JSON.stringify({
+                    phone: `91${phone.trim()}`,
+                    otp: otpCode.trim(),
+                    name: regName.trim(),
+                    email: regEmail.trim()
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Registration failed. Please try again.');
+
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
-            setSuccess({ title: 'Welcome!', description: 'Signed in with Google. Redirecting…' });
+            setSuccess({
+                title: 'Account created!',
+                description: 'Welcome to THE ELEGANT — profile setup completed. Redirecting…',
+            });
             setTimeout(() => {
                 if (data.user.role === 'admin') navigate('/admin/dashboard');
                 else navigate(from, { replace: true });
@@ -159,10 +283,6 @@ const AuthPage = () => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleGoogleError = () => {
-        setGlobalError('Google sign-in was cancelled or failed. Please try again.');
     };
 
     // Validate all fields for the current mode; return true if clean
@@ -301,7 +421,7 @@ const AuthPage = () => {
                             <h2 className="text-3xl sm:text-4xl font-black tracking-tight uppercase">
                                 {authMode === 'register' ? 'Create Account'
                                     : authMode === 'forgot' ? 'Reset Password'
-                                    : authMode === 'social' ? 'Social Sign In'
+                                    : authMode === 'otp' ? 'OTP Sign In'
                                     : 'Welcome Back'}
                             </h2>
                             <p className="text-neutral-500 mt-2 text-sm leading-relaxed">
@@ -309,8 +429,8 @@ const AuthPage = () => {
                                     ? 'Sign up to track purchases, manage wishlists, and unlock member benefits.'
                                     : authMode === 'forgot'
                                     ? 'Enter the email linked to your account and we\'ll send you a secure reset link.'
-                                    : authMode === 'social'
-                                    ? 'Sign in or create an account instantly using your Google account.'
+                                    : authMode === 'otp'
+                                    ? 'Sign in or register securely using a mobile verification code.'
                                     : 'Sign in to access your personal dashboard and order history.'}
                             </p>
                         </div>
@@ -320,7 +440,7 @@ const AuthPage = () => {
                             <div className="grid grid-cols-3 gap-1 p-1 bg-neutral-100 rounded-xl text-center text-xs font-bold uppercase tracking-wide">
                                 {[
                                     { id: 'email-login', label: 'Email Login' },
-                                    { id: 'social', label: 'Social Login' },
+                                    { id: 'otp', label: 'OTP Login' },
                                     { id: 'register', label: 'Register' },
                                 ].map(tab => (
                                     <button
@@ -408,40 +528,196 @@ const AuthPage = () => {
                             </form>
                         )}
 
-                        {/* ── Social Login ── */}
-                        {authMode === 'social' && (
+                        {/* ── OTP Login/Register ── */}
+                        {authMode === 'otp' && (
                             <div className="space-y-6 animate-slide-in">
-                                <p className="text-sm text-neutral-500 text-center">
-                                    Sign in instantly with your Google account. A new account is created automatically on first sign-in — no password needed.
-                                </p>
+                                {!needRegistration ? (
+                                    !otpSent ? (
+                                        /* Step 1: Request OTP */
+                                        <form onSubmit={handleSendOtp} className="space-y-5" noValidate>
+                                            <div>
+                                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1.5" htmlFor="otp-phone">
+                                                    Mobile Number
+                                                </label>
+                                                <div className={`relative flex items-center border rounded-xl overflow-hidden bg-white transition-all duration-200 ${
+                                                    phoneError
+                                                        ? 'border-red-400 ring-1 ring-red-300'
+                                                        : 'border-neutral-300 focus-within:border-black focus-within:ring-2 focus-within:ring-black/10'
+                                                }`}>
+                                                    <span className="pl-4 text-neutral-400"><Phone size={17} /></span>
+                                                    <span className="pl-3 pr-2 text-sm font-bold text-neutral-500 border-r border-neutral-200 select-none">
+                                                        +91
+                                                    </span>
+                                                    <input
+                                                        id="otp-phone"
+                                                        type="tel"
+                                                        value={phone}
+                                                        onChange={(e) => { 
+                                                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                            setPhone(val); 
+                                                            setPhoneError(''); 
+                                                        }}
+                                                        placeholder="9876543210"
+                                                        className="flex-1 py-3 px-3 text-sm outline-none bg-transparent font-medium"
+                                                    />
+                                                </div>
+                                                <FieldError msg={phoneError} />
+                                                <p className="text-[11px] text-neutral-400 mt-1.5 leading-relaxed">
+                                                    Enter your 10-digit mobile number. The country prefix (+91) is locked to India.
+                                                </p>
+                                            </div>
 
-                                <div className="flex justify-center">
-                                    {loading ? (
-                                        <div className="flex items-center gap-2 py-3 text-sm text-neutral-500">
-                                            <span className="w-4 h-4 border-2 border-neutral-300 border-t-neutral-700 rounded-full animate-spin" />
-                                            Signing in…
-                                        </div>
+                                            <button
+                                                type="submit"
+                                                disabled={loading || !!success}
+                                                className="w-full flex items-center justify-center gap-2 py-3.5 bg-black text-white text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                                            >
+                                                {loading ? (
+                                                    <span className="flex items-center gap-2">
+                                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                        Sending OTP…
+                                                    </span>
+                                                ) : (
+                                                    <>Send Verification OTP <ArrowRight size={15} /></>
+                                                )}
+                                            </button>
+                                        </form>
                                     ) : (
-                                        <GoogleLogin
-                                            onSuccess={handleGoogleSuccess}
-                                            onError={handleGoogleError}
-                                            theme="outline"
-                                            size="large"
-                                            text="continue_with"
-                                            shape="rectangular"
-                                            width="360"
-                                        />
-                                    )}
-                                </div>
+                                        /* Step 2: Verify OTP */
+                                        <form onSubmit={handleVerifyOtp} className="space-y-5" noValidate>
+                                            <div>
+                                                <div className="flex justify-between items-center mb-1.5">
+                                                    <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600" htmlFor="otp-code">
+                                                        Enter Verification Code
+                                                    </label>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setOtpSent(false); setOtpCode(''); setOtpCodeError(''); }}
+                                                        className="text-xs text-neutral-400 hover:text-black transition-colors font-medium underline"
+                                                    >
+                                                        Change number
+                                                    </button>
+                                                </div>
+                                                <div className={`relative flex items-center border rounded-xl overflow-hidden bg-white transition-all duration-200 ${
+                                                    otpCodeError
+                                                        ? 'border-red-400 ring-1 ring-red-300'
+                                                        : 'border-neutral-300 focus-within:border-black focus-within:ring-2 focus-within:ring-black/10'
+                                                }`}>
+                                                    <span className="pl-4 text-neutral-400"><Key size={17} /></span>
+                                                    <input
+                                                        id="otp-code"
+                                                        type="text"
+                                                        value={otpCode}
+                                                        onChange={(e) => { setOtpCode(e.target.value); setOtpCodeError(''); }}
+                                                        placeholder="••••••"
+                                                        maxLength={6}
+                                                        className="flex-1 py-3 px-3 text-sm outline-none bg-transparent tracking-widest font-mono text-center font-bold text-lg"
+                                                    />
+                                                </div>
+                                                <FieldError msg={otpCodeError} />
+                                                <div className="flex justify-between items-center mt-2">
+                                                    <p className="text-[11px] text-neutral-400">
+                                                        Code sent to +91 {phone}
+                                                    </p>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleSendOtp}
+                                                        disabled={loading}
+                                                        className="text-[11px] font-bold text-black hover:underline disabled:opacity-50"
+                                                    >
+                                                        Resend Code
+                                                    </button>
+                                                </div>
+                                            </div>
 
-                                <div className="relative flex items-center gap-3">
-                                    <div className="flex-1 h-px bg-neutral-200" />
-                                    <span className="text-xs text-neutral-400 font-medium uppercase tracking-wide">More options coming soon</span>
-                                    <div className="flex-1 h-px bg-neutral-200" />
-                                </div>
+                                            <button
+                                                type="submit"
+                                                disabled={loading}
+                                                className="w-full flex items-center justify-center gap-2 py-3.5 bg-black text-white text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                                            >
+                                                {loading ? (
+                                                    <span className="flex items-center gap-2">
+                                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                        Verifying…
+                                                    </span>
+                                                ) : (
+                                                    <>Verify & Sign In <ArrowRight size={15} /></>
+                                                )}
+                                            </button>
+                                        </form>
+                                    )
+                                ) : (
+                                    /* Step 3: Profile Registration for new user */
+                                    <form onSubmit={handleOtpRegister} className="space-y-5" noValidate>
+                                        <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl mb-4">
+                                            <p className="text-xs text-neutral-600 leading-relaxed font-medium">
+                                                ✦ Phone number verified (+91 {phone}). Since you are signing up for the first time, please fill in your details to create an account.
+                                            </p>
+                                        </div>
 
-                                <p className="text-center text-sm text-neutral-500">
-                                    Prefer email?{' '}
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1.5" htmlFor="reg-name">
+                                                Full Name
+                                            </label>
+                                            <div className={`relative flex items-center border rounded-xl overflow-hidden bg-white transition-all duration-200 ${
+                                                regNameError
+                                                    ? 'border-red-400 ring-1 ring-red-300'
+                                                    : 'border-neutral-300 focus-within:border-black focus-within:ring-2 focus-within:ring-black/10'
+                                            }`}>
+                                                <span className="pl-4 text-neutral-400"><User size={17} /></span>
+                                                <input
+                                                    id="reg-name"
+                                                    type="text"
+                                                    value={regName}
+                                                    onChange={(e) => { setRegName(e.target.value); setRegNameError(''); }}
+                                                    placeholder="John Doe"
+                                                    className="flex-1 py-3 px-3 text-sm outline-none bg-transparent"
+                                                />
+                                            </div>
+                                            <FieldError msg={regNameError} />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1.5" htmlFor="reg-email">
+                                                Email Address
+                                            </label>
+                                            <div className={`relative flex items-center border rounded-xl overflow-hidden bg-white transition-all duration-200 ${
+                                                regEmailError
+                                                    ? 'border-red-400 ring-1 ring-red-300'
+                                                    : 'border-neutral-300 focus-within:border-black focus-within:ring-2 focus-within:ring-black/10'
+                                            }`}>
+                                                <span className="pl-4 text-neutral-400"><Mail size={17} /></span>
+                                                <input
+                                                    id="reg-email"
+                                                    type="email"
+                                                    value={regEmail}
+                                                    onChange={(e) => { setRegEmail(e.target.value); setRegEmailError(''); }}
+                                                    placeholder="name@example.com"
+                                                    className="flex-1 py-3 px-3 text-sm outline-none bg-transparent"
+                                                />
+                                            </div>
+                                            <FieldError msg={regEmailError} />
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            disabled={loading}
+                                            className="w-full flex items-center justify-center gap-2 py-3.5 bg-black text-white text-sm font-bold uppercase tracking-widest rounded-xl hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                                        >
+                                            {loading ? (
+                                                <span className="flex items-center gap-2">
+                                                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                    Completing profile…
+                                                </span>
+                                            ) : (
+                                                <>Complete Profile & Sign In <ArrowRight size={15} /></>
+                                            )}
+                                        </button>
+                                    </form>
+                                )}
+
+                                <p className="text-center text-sm text-neutral-500 pt-2">
+                                    Prefer standard login?{' '}
                                     <button type="button" onClick={() => switchMode('email-login')} className="font-bold text-black hover:underline">
                                         Sign in with password
                                     </button>
@@ -450,7 +726,7 @@ const AuthPage = () => {
                         )}
 
                         {/* ── Email Login / Register forms ── */}
-                        {authMode !== 'forgot' && authMode !== 'social' && (
+                        {authMode !== 'forgot' && authMode !== 'otp' && (
                             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                                 <div className="space-y-5 animate-slide-in">
 
