@@ -5,6 +5,14 @@ import { ArrowRight, Zap, TrendingUp, Award, Dumbbell, Trophy, Shirt } from 'luc
 import { useEffect, useRef, useState } from 'react';
 import { apiFetch } from '../utils/api';
 import NewArrivalsCarousel from '../components/home/NewArrivalsCarousel';
+import NewDropsCarousel from '../components/home/NewDropsCarousel';
+
+const newDropsItems = [
+    { id: 'drop-m1', name: 'Olive Button Down Oxford Shirts', image: 'https://images.unsplash.com/photo-1603252109303-2751441dd157?w=600&q=80' },
+    { id: 'drop-m2', name: 'Sand Brown Linen Striped Shirt', image: 'https://images.unsplash.com/photo-1618886614638-80e3c103d31a?w=600&q=80' },
+    { id: 'drop-m3', name: 'Dark Wine Double Cuff Satin Shirt', image: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&q=80' },
+    { id: 'drop-m4', name: 'Black Jacquard Speckled T-Shirt', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80' },
+];
 
 const apparelCategories = [
     { name: 'SHIRTS', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80', href: '/collections/mens-clothing?subcategory=shirts' },
@@ -185,6 +193,24 @@ const HomePage = () => {
                         ))}
                     </div>
                 </AnimatedSection>
+            </section>
+            {/* New Drops Section (Similar to screenshot layout) */}
+            <section className="bg-white py-12 md:py-20 border-t border-neutral-100">
+                <div className="container-custom">
+                    {/* Header */}
+                    <div className="text-center mb-10 md:mb-14">
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-2">
+                            NEW DROPS
+                        </h2>
+                        <p className="text-neutral-600 text-sm md:text-base font-medium">
+                            Exclusive Styles For You
+                        </p>
+                    </div>
+
+                    <AnimatedSection>
+                        <NewDropsCarousel items={newDropsItems} />
+                    </AnimatedSection>
+                </div>
             </section>
 
             {/* Shop By Category Grid (Nitro Collection Replacement) */}

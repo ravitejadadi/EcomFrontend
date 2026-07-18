@@ -5,6 +5,14 @@ import { ArrowRight, Zap, Shirt } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { apiFetch } from '../utils/api';
 import NewArrivalsCarousel from '../components/home/NewArrivalsCarousel';
+import NewDropsCarousel from '../components/home/NewDropsCarousel';
+
+const newDropsItems = [
+    { id: 'drop-w1', name: 'Floral Ruffled Midi Dress', image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80' },
+    { id: 'drop-w2', name: 'Linen V-Neck Summer Blouse', image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80' },
+    { id: 'drop-w3', name: 'Emerald Silk Satin Slip Dress', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80' },
+    { id: 'drop-w4', name: 'Oversized Crochet Knit Top', image: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&q=80' },
+];
 
 const apparelCategories = [
     { name: 'DRESSES', image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=500&q=80', href: '/collections/womens-clothing?subcategory=dresses' },
@@ -170,6 +178,24 @@ const WomensPage = () => {
                         ))}
                     </div>
                 </AnimatedSection>
+            </section>
+            {/* New Drops Section (Similar to screenshot layout) */}
+            <section className="bg-white py-12 md:py-20 border-t border-neutral-100">
+                <div className="container-custom">
+                    {/* Header */}
+                    <div className="text-center mb-10 md:mb-14">
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight uppercase mb-2">
+                            NEW DROPS
+                        </h2>
+                        <p className="text-neutral-600 text-sm md:text-base font-medium">
+                            Exclusive Styles For You
+                        </p>
+                    </div>
+
+                    <AnimatedSection>
+                        <NewDropsCarousel items={newDropsItems} />
+                    </AnimatedSection>
+                </div>
             </section>
 
             {/* Shop By Category Grid */}
