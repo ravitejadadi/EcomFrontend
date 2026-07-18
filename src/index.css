@@ -330,3 +330,18 @@ html {
 img {
   @apply transition-opacity duration-300;
 }
+
+/* Custom Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  animation: marquee 12s linear infinite;
+}

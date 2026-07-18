@@ -70,7 +70,8 @@ const Navbar = () => {
         },
         'Men': {
             featured: [
-                { name: 'Bestsellers', href: '/collections/men-bestsellers', highlight: true },
+                { name: 'Shop All Men', href: '/', highlight: true },
+                { name: 'Bestsellers', href: '/collections/men-bestsellers' },
                 { name: 'New Arrivals', href: '/collections/mens-new' },
                 { name: 'Sale', href: '/collections/men-sale', sale: true },
             ],
@@ -82,7 +83,8 @@ const Navbar = () => {
         },
         'Women': {
             featured: [
-                { name: 'Bestsellers', href: '/collections/women-bestsellers', highlight: true },
+                { name: 'Shop All Women', href: '/collections/women', highlight: true },
+                { name: 'Bestsellers', href: '/collections/women-bestsellers' },
                 { name: 'New Arrivals', href: '/collections/womens-new' },
                 { name: 'Sale', href: '/collections/women-sale', sale: true },
             ],
@@ -115,8 +117,8 @@ const Navbar = () => {
 
     const mainMenuItems = [
         { name: 'New', hasMenu: true },
-        { name: 'Men', hasMenu: true },
-        { name: 'Women', hasMenu: true },
+        { name: 'Men', href: '/', hasMenu: true },
+        { name: 'Women', href: '/collections/women', hasMenu: true },
         { name: 'Sports', hasMenu: true },
         { name: 'Kids', hasMenu: true },
         { name: 'Sale', href: '/collections/sale', highlight: true },
@@ -184,12 +186,13 @@ const Navbar = () => {
                                     {item.href ? (
                                         <Link
                                             to={item.href}
-                                            className={`px-3 lg:px-4 py-2 text-sm lg:text-base font-semibold transition-colors rounded-md ${item.highlight
+                                            className={`px-3 lg:px-4 py-2 text-sm lg:text-base font-semibold transition-colors rounded-md flex items-center gap-1 ${item.highlight
                                                 ? 'text-red-600 hover:text-red-700 hover:bg-red-50'
                                                 : 'text-neutral-900 hover:bg-neutral-100'
                                                 }`}
                                         >
                                             {item.name}
+                                            {item.hasMenu && <ChevronDown size={16} className="opacity-60" />}
                                         </Link>
                                     ) : (
                                         <button
@@ -370,16 +373,69 @@ const Navbar = () => {
                                 {mainMenuItems.map((item) => (
                                     <div key={item.name}>
                                         {item.href ? (
-                                            <Link
-                                                to={item.href}
-                                                className={`block px-4 py-3 text-base font-semibold rounded-lg transition-colors ${item.highlight
-                                                    ? 'text-red-600 hover:bg-red-50'
-                                                    : 'text-neutral-900 hover:bg-neutral-100'
-                                                    }`}
-                                                onClick={() => setIsMobileMenuOpen(false)}
-                                            >
-                                                {item.name}
-                                            </Link>
+                                            <div>
+                                                <div className="flex items-center justify-between hover:bg-neutral-50 rounded-lg">
+                                                    <Link
+                                                        to={item.href}
+                                                        className={`flex-1 text-left px-4 py-3 text-base font-semibold transition-colors ${item.highlight
+                                                            ? 'text-red-600'
+                                                            : 'text-neutral-900'
+                                                            }`}
+                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                    >
+                                                        {item.name}
+                                                    </Link>
+                                                    {item.hasMenu && (
+                                                        <button
+                                                            onClick={() => setActiveMenu(activeMenu === item.name ? null : item.name)}
+                                                            className="p-3 text-neutral-500 hover:bg-neutral-100 rounded-r-lg"
+                                                            aria-label={`Toggle ${item.name} menu`}
+                                                        >
+                                                            <ChevronDown
+                                                                size={20}
+                                                                className={`transition-transform duration-200 ${activeMenu === item.name ? 'rotate-180' : ''}`}
+                                                            />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                {item.hasMenu && activeMenu === item.name && megaMenuData[item.name] && (
+                                                    <div className="ml-4 mt-1 space-y-1 pb-2">
+                                                        <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider px-4 py-2">
+                                                            Featured
+                                                        </div>
+                                                        {megaMenuData[item.name].featured.map((subItem) => (
+                                                            <Link
+                                                                key={subItem.name}
+                                                                to={subItem.href}
+                                                                className={`block px-4 py-2 text-sm rounded-lg transition-colors ${subItem.sale
+                                                                    ? 'text-red-600 font-semibold hover:bg-red-50'
+                                                                    : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50'
+                                                                    }`}
+                                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                            >
+                                                                {subItem.name}
+                                                            </Link>
+                                                        ))}
+                                                        {megaMenuData[item.name].categories && megaMenuData[item.name].categories.length > 0 && (
+                                                            <>
+                                                                <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider px-4 py-2 mt-2">
+                                                                    Categories
+                                                                </div>
+                                                                {megaMenuData[item.name].categories.map((subItem) => (
+                                                                    <Link
+                                                                        key={subItem.name}
+                                                                        to={subItem.href}
+                                                                        className="block px-4 py-2 text-sm text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg transition-colors"
+                                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                                    >
+                                                                        {subItem.name}
+                                                                    </Link>
+                                                                ))}
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         ) : (
                                             <>
                                                 <button

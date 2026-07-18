@@ -1,27 +1,60 @@
 import Hero from '../components/home/Hero';
 import ProductCard from '../components/product/ProductCard';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Zap, TrendingUp, Award, Dumbbell, Trophy, Shirt } from 'lucide-react';
+import { ArrowRight, Zap, Shirt } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { apiFetch } from '../utils/api';
 import NewArrivalsCarousel from '../components/home/NewArrivalsCarousel';
 
 const apparelCategories = [
-    { name: 'SHIRTS', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80', href: '/collections/mens-clothing?subcategory=shirts' },
-    { name: 'TROUSERS', image: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500&q=80', href: '/collections/mens-clothing?subcategory=trousers' },
-    { name: "EVERYTHING UNDER\n₹799", image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80', href: '/collections/mens-clothing?maxPrice=799', promo: true },
-    { name: 'POLOS', image: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=500&q=80', href: '/collections/mens-clothing?subcategory=polos' },
-    { name: 'CARGOS', image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&q=80', href: '/collections/mens-clothing?subcategory=cargos' },
-    { name: 'JEANS', image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&q=80', href: '/collections/mens-clothing?subcategory=jeans' },
-    { name: 'OVERSIZED\nT-SHIRTS', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80', href: '/collections/mens-clothing?subcategory=t-shirts' },
-    { name: 'JOGGERS', image: 'https://images.unsplash.com/photo-1551854838-212c50b4c184?w=500&q=80', href: '/collections/mens-clothing?subcategory=shorts' },
-    { name: 'PRINTED\nT-SHIRTS', image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&q=80', href: '/collections/mens-clothing?subcategory=t-shirts' },
-    { name: "EVERYTHING UNDER\n₹999", image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=500&q=80', href: '/collections/mens-clothing?maxPrice=999', promo: true },
-    { name: 'PYJAMAS', image: 'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?w=500&q=80', href: '/collections/mens-clothing?subcategory=pyjamas' },
-    { name: 'BOXERS', image: 'https://images.unsplash.com/photo-1562157873-818bc0726f68?w=500&q=80', href: '/collections/mens-clothing?subcategory=boxers' },
+    { name: 'DRESSES', image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=500&q=80', href: '/collections/womens-clothing?subcategory=dresses' },
+    { name: 'TOPS & TEES', image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&q=80', href: '/collections/womens-clothing?subcategory=tops' },
+    { name: "EVERYTHING UNDER\n₹799", image: 'https://images.unsplash.com/photo-1473116763269-255ea7604bb6?w=500&q=80', href: '/collections/womens-clothing?maxPrice=799', promo: true },
+    { name: 'HOODIES', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80', href: '/collections/womens-clothing?subcategory=hoodies' },
+    { name: 'CO-ORDS', image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80', href: '/collections/womens-clothing?subcategory=co-ords' },
+    { name: 'JEANS & DENIM', image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&q=80', href: '/collections/womens-clothing?subcategory=jeans' },
+    { name: 'OVERSIZED TEES', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80', href: '/collections/womens-clothing?subcategory=oversized' },
+    { name: 'JOGGERS & SHORTS', image: 'https://images.unsplash.com/photo-1551854838-212c50b4c184?w=500&q=80', href: '/collections/womens-clothing?subcategory=joggers' },
+    { name: 'ACTIVEWEAR', image: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=500&q=80', href: '/collections/womens-clothing?subcategory=activewear' },
+    { name: "EVERYTHING UNDER\n₹999", image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=500&q=80', href: '/collections/womens-clothing?maxPrice=999', promo: true },
+    { name: 'PYJAMAS', image: 'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?w=500&q=80', href: '/collections/womens-clothing?subcategory=pyjamas' },
+    { name: 'STUDIO LEGGINGS', image: 'https://images.unsplash.com/photo-1506152983158-b4a74a01c721?w=500&q=80', href: '/collections/womens-clothing?subcategory=leggings' },
 ];
 
-// Scroll-reveal wrapper — transitions only opacity + transform (composited, no layout cost)
+const womensSlides = [
+    {
+        id: 1,
+        title: "WOMEN'S WINTERWEAR",
+        subtitle: 'STAY WARM, STAY ELEGANT',
+        description: 'Explore our premium jackets, coats, and hoodies designed for style and warmth.',
+        image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&q=75',
+        cta: { text: 'SHOP WINTERWEAR', link: '/collections/womens-clothing' },
+        theme: 'dark',
+        badge: 'NEW COLLECTION',
+    },
+    {
+        id: 2,
+        title: 'STUDIO ELEGANCE',
+        subtitle: 'YOGA & TRAINING ACTIVEWEAR',
+        description: 'High-performance tanks, sports bras, and leggings engineered for flow and style.',
+        image: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=1200&q=75',
+        cta: { text: 'SHOP STUDIO', link: '/collections/womens-clothing' },
+        theme: 'light',
+        badge: 'PERFORMANCE',
+    },
+    {
+        id: 3,
+        title: 'SUMMER ESSENTIALS',
+        subtitle: 'DRESSES & CO-ORDS',
+        description: 'Discover lightweight fabrics and styles for hot summer days.',
+        image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=75',
+        cta: { text: 'EXPLORE COLLECTION', link: '/collections/womens-clothing' },
+        theme: 'dark',
+        badge: 'TRENDING',
+    },
+];
+
+// Scroll-reveal wrapper
 const AnimatedSection = ({ children, className = '' }) => {
     const ref = useRef(null);
     const [inView, setInView] = useState(false);
@@ -52,44 +85,7 @@ const AnimatedSection = ({ children, className = '' }) => {
     );
 };
 
-// Defined OUTSIDE HomePage so React never sees it as a new component type on re-renders
-// (defining inside causes unmount/remount of all cards every time products state updates)
-const CategorySection = ({ title, subtitle, icon: Icon, products, link, bgColor = 'bg-neutral-50' }) => (
-    <section className={`${bgColor} py-12 md:py-20`}>
-        <div className="container-custom">
-            <div className="flex items-center justify-between mb-8 md:mb-12">
-                <div>
-                    <div className="flex items-center gap-2 mb-2">
-                        <Icon size={24} className="text-blue-600" />
-                        <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-neutral-600">
-                            {subtitle}
-                        </span>
-                    </div>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight">
-                        {title}
-                    </h2>
-                </div>
-                <Link
-                    to={link}
-                    className="hidden md:flex items-center gap-2 text-sm font-bold hover:gap-3 transition-all uppercase"
-                >
-                    VIEW ALL <ArrowRight size={18} />
-                </Link>
-            </div>
-            <AnimatedSection>
-                <div className="product-grid">
-                    {products.map((product) => (
-                        <div key={product.id}>
-                            <ProductCard product={product} />
-                        </div>
-                    ))}
-                </div>
-            </AnimatedSection>
-        </div>
-    </section>
-);
-
-const HomePage = () => {
+const WomensPage = () => {
     const [products, setProducts] = useState([]);
     const [activeFilter, setActiveFilter] = useState('View All');
 
@@ -110,53 +106,42 @@ const HomePage = () => {
         fetchProducts();
     }, []);
 
-    const isMensProduct = (p) => (p.gender === 'men' || p.gender === 'unisex') && p.category !== 'Sneakers' && p.category !== 'Running';
+    const isWomensProduct = (p) => (p.gender === 'women' || p.gender === 'unisex') && p.category !== 'Sneakers' && p.category !== 'Running';
 
-    const newArrivals = products.filter(p => isMensProduct(p) && (p.badges?.includes('NEW') || p.id.startsWith('men')));
+    const newArrivals = products.filter(p => isWomensProduct(p) && (p.badges?.includes('NEW') || p.id.startsWith('women')));
 
     const filteredNewArrivals = newArrivals.filter(p => {
         if (activeFilter === 'View All') return true;
         const sub = p.subcategory?.toLowerCase() || '';
         const name = p.name?.toLowerCase() || '';
-        if (activeFilter === 'Shirts') {
-            return sub === 'shirts' || name.includes('shirt') || sub === 'polos';
+        if (activeFilter === 'Dresses') {
+            return sub === 'dresses' || name.includes('dress') || name.includes('gown');
         }
-        if (activeFilter === 'Polo T-shirts') {
-            return sub === 'polos' || name.includes('polo');
+        if (activeFilter === 'Activewear') {
+            return sub === 'activewear' || sub === 'tanks' || sub === 'leggings' || name.includes('studio') || name.includes('tank') || sub === 'sports bras';
         }
-        if (activeFilter === 'T-shirts') {
-            return sub === 't-shirts' || name.includes('tee') || name.includes('t-shirt');
+        if (activeFilter === 'Tops') {
+            return sub === 'tops' || sub === 't-shirts' || name.includes('tee') || name.includes('top');
         }
-        if (activeFilter === 'Trousers') {
-            return sub === 'trousers' || sub === 'shorts' || name.includes('shorts') || name.includes('pant') || name.includes('jogger');
+        if (activeFilter === 'Hoodies') {
+            return sub === 'hoodies' || name.includes('hood') || name.includes('sweatshirt') || sub === 'jackets';
         }
         return true;
     });
 
     return (
         <div>
-            <Hero />
-
-            {/* Trending Banner */}
-            {/* <section className="bg-black text-white py-3 md:py-4">
-                <div className="container-custom">
-                    <div className="flex items-center justify-center gap-3 text-sm md:text-base font-bold tracking-wider">
-                        <TrendingUp size={20} className="text-yellow-400" />
-                        <span className="uppercase">TRENDING: VELOCITY NITRO 4 | SCUDERIA FERRARI | TRAINING HOODIE</span>
-                        <TrendingUp size={20} className="text-yellow-400" />
-                    </div>
-                </div>
-            </section> */}
+            <Hero slides={womensSlides} />
 
             {/* Featured Categories Grid */}
             <section className="container-custom py-12 md:py-20">
                 <AnimatedSection>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                         {[
-                            { title: "MEN'S APPAREL", subtitle: 'Clothing & Gear', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=75', link: '/collections/mens-clothing', badge: 'ESSENTIALS' },
-                            { title: "MEN'S SHIRTS", subtitle: 'Trend Collection', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&q=75', link: '/collections/mens-clothing', badge: 'SHIRTS' },
-                            { title: "MEN'S WINTERWEAR", subtitle: 'Stay Warm', image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=75', link: '/collections/mens-clothing', badge: 'PUFFER' },
-                            { title: "MEN'S MOTORSPORT", subtitle: 'Racing Heritage', image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=600&q=75', link: '/collections/mens-clothing', badge: 'FERRARI' },
+                            { title: "WOMEN'S APPAREL", subtitle: 'Clothing & Gear', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=75', link: '/collections/womens-clothing', badge: 'ESSENTIALS' },
+                            { title: "WOMEN'S DRESSES", subtitle: 'Elegant Style', image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=75', link: '/collections/womens-clothing', badge: 'DRESSES' },
+                            { title: "WOMEN'S ATHLETICS", subtitle: 'Yoga & Fit', image: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=600&q=75', link: '/collections/womens-clothing', badge: 'STUDIO' },
+                            { title: "WOMEN'S ACCESSORIES", subtitle: 'Finishing Touch', image: 'https://images.unsplash.com/photo-1509319117193-57bab727e09d?w=600&q=75', link: '/collections/accessories', badge: 'FINISHING TOUCH' },
                         ].map((cat, i) => (
                             <div key={i}>
                                 <Link to={cat.link} className="relative h-80 md:h-96 rounded-xl overflow-hidden group block">
@@ -187,13 +172,13 @@ const HomePage = () => {
                 </AnimatedSection>
             </section>
 
-            {/* Shop By Category Grid (Nitro Collection Replacement) */}
+            {/* Shop By Category Grid */}
             <section className="bg-white py-12 md:py-20 border-t border-neutral-100">
                 <div className="container-custom">
                     <div className="flex items-center justify-between mb-8 md:mb-12">
                         <div>
                             <div className="flex items-center gap-2 mb-2">
-                                <Shirt size={24} className="text-blue-600" />
+                                <Shirt size={24} className="text-pink-600" />
                                 <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-neutral-600">
                                     Browse Collections
                                 </span>
@@ -252,7 +237,7 @@ const HomePage = () => {
                 </div>
             </div>
 
-            {/* New Arrivals Section (Similar to Second Image) */}
+            {/* New Arrivals Section */}
             <section className="bg-white py-16 md:py-24">
                 <div className="container-custom">
                     {/* Header */}
@@ -267,7 +252,7 @@ const HomePage = () => {
 
                     {/* Filter Pills */}
                     <div className="flex flex-wrap justify-center items-center gap-3 mb-10 md:mb-14">
-                        {['View All', 'Shirts', 'Polo T-shirts', 'T-shirts', 'Trousers'].map((filterName) => {
+                        {['View All', 'Dresses', 'Activewear', 'Tops', 'Hoodies'].map((filterName) => {
                             const isActive = activeFilter === filterName;
                             return (
                                 <button
@@ -318,4 +303,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default WomensPage;

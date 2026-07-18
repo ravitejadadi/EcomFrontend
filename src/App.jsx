@@ -8,6 +8,7 @@ import CartDrawer from './components/cart/CartDrawer';
 
 // Lazy-loaded page routes for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
+const WomensPage = lazy(() => import('./pages/WomensPage'));
 const CollectionPage = lazy(() => import('./pages/CollectionPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
@@ -62,6 +63,7 @@ function AppContent() {
           <Routes>
             {/* Customer Routes */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/collections/women" element={<WomensPage />} />
             <Route path="/collections/:category" element={<CollectionPage />} />
             <Route path="/product/:slug" element={<ProductDetailPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
