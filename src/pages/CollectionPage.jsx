@@ -125,9 +125,9 @@ const CollectionPage = () => {
             </div>
 
             {/* Filters & Sort */}
-            <div className="flex justify-between items-center gap-4 mb-8 pb-8 border-b border-neutral-200">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8 pb-8 border-b border-neutral-200">
                 {/* Price Filter */}
-                <div className="relative flex-1 sm:flex-initial">
+                <div className="relative w-full sm:w-auto sm:flex-initial">
                     <select
                         value={filters.priceRange}
                         onChange={(e) => setFilters({ ...filters, priceRange: e.target.value })}
@@ -145,7 +145,7 @@ const CollectionPage = () => {
                 </div>
 
                 {/* Sort */}
-                <div className="relative flex-1 sm:flex-initial sm:ml-auto">
+                <div className="relative w-full sm:w-auto sm:flex-initial sm:ml-auto">
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
