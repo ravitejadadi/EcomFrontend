@@ -18,6 +18,8 @@ const ProductDetailPage = () => {
 
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState(null);
+    const [selectedColor, setSelectedColor] = useState('');
+    const [selectedSize, setSelectedSize] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [wishlisted, setWishlisted] = useState(false);
 
@@ -62,6 +64,8 @@ const ProductDetailPage = () => {
 
     useEffect(() => {
         if (product && product.variants.length > 0) {
+            setSelectedColor(product.variants[0].color);
+            setSelectedSize(product.variants[0].size);
             setSelectedVariant(product.variants[0]);
             setSelectedImage(0);
             setWishlisted(isWishlisted(product.id || product._id));
@@ -94,6 +98,61 @@ const ProductDetailPage = () => {
         ? calculateDiscount(product.compareAtPrice, product.price)
         : 0;
 
+    const getColorStyle = (colorName) => {
+        const lower = colorName.toLowerCase();
+        if (lower.includes('white')) return '#ffffff';
+        if (lower.includes('black')) return '#000000';
+        if (lower.includes('blue')) return '#1e40af';
+        if (lower.includes('yellow')) return '#eab308';
+        if (lower.includes('orange')) return '#f97316';
+        if (lower.includes('gray') || lower.includes('grey')) return '#6b7280';
+        if (lower.includes('green') || lower.includes('olive')) return '#15803d';
+        if (lower.includes('sand') || lower.includes('beige')) return '#d2b48c';
+        if (lower.includes('gold')) return '#d4af37';
+        if (lower.includes('pink')) return '#db2777';
+        if (lower.includes('purple')) return '#7e22ce';
+        if (lower.includes('red')) return '#dc2626';
+        return '#a3a3a3';
+    };
+
+    const handleColorChange = (color) => {
+        setSelectedColor(color);
+        let matchingVariant = product.variants.find((v) => v.color === color && v.size === selectedSize);
+        if (!matchingVariant) {
+            matchingVariant = product.variants.find((v) => v.color === color && v.inStock);
+        }
+        if (!matchingVariant) {
+            matchingVariant = product.variants.find((v) => v.color === color);
+        }
+        if (matchingVariant) {
+            setSelectedSize(matchingVariant.size);
+            setSelectedVariant(matchingVariant);
+            
+            // Auto-select image that matches color name in alt
+            const colorImgIndex = product.images.findIndex(img => 
+                img.alt && img.alt.toLowerCase().includes(color.toLowerCase())
+            );
+            if (colorImgIndex > -1) {
+                setSelectedImage(colorImgIndex);
+            }
+        }
+    };
+
+    const handleSizeChange = (size) => {
+        setSelectedSize(size);
+        let matchingVariant = product.variants.find((v) => v.size === size && v.color === selectedColor);
+        if (!matchingVariant) {
+            matchingVariant = product.variants.find((v) => v.size === size && v.inStock);
+        }
+        if (!matchingVariant) {
+            matchingVariant = product.variants.find((v) => v.size === size);
+        }
+        if (matchingVariant) {
+            setSelectedColor(matchingVariant.color);
+            setSelectedVariant(matchingVariant);
+        }
+    };
+
     const handleAddToCart = () => {
         if (selectedVariant) {
             addToCart(product, selectedVariant, quantity);
@@ -104,7 +163,8 @@ const ProductDetailPage = () => {
         .filter((p) => p.category === product.category && p.id !== product.id)
         .slice(0, 4);
 
-    const uniqueSizes = [...new Set(product.variants.map((v) => v.size))];
+    const uniqueColors = product ? [...new Set(product.variants.map((v) => v.color))] : [];
+    const uniqueSizes = product ? [...new Set(product.variants.map((v) => v.size))] : [];
 
     return (
         <div>
@@ -216,6 +276,50 @@ const ProductDetailPage = () => {
                             {product.description}
                         </p>
 
+                        {/* Color Selection */}
+                        {uniqueColors.length > 0 && uniqueColors[0] && (
+                            <div className="mb-6">
+                                <div className="flex items-center justify-between mb-3">
+                                    <label className="font-semibold flex items-center gap-1.5">
+                                        <span>Color:</span>
+                                        <span className="text-neutral-600 font-normal">({selectedColor})</span>
+                                    </label>
+                                </div>
+                                <div className="flex flex-wrap gap-3">
+                                    {uniqueColors.map((color) => {
+                                        const isSelected = selectedColor === color;
+                                        const isAvailable = product.variants.some((v) => v.color === color && v.inStock);
+                                        const colorHex = getColorStyle(color);
+
+                                        return (
+                                            <button
+                                                key={color}
+                                                onClick={() => handleColorChange(color)}
+                                                className={`relative w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                                                    isSelected
+                                                        ? 'border-neutral-900 scale-110 shadow-sm'
+                                                        : 'border-neutral-200 hover:border-neutral-400'
+                                                }`}
+                                                title={color}
+                                            >
+                                                <span
+                                                    className="w-8 h-8 rounded-full border border-neutral-200"
+                                                    style={{
+                                                        backgroundColor: colorHex,
+                                                    }}
+                                                />
+                                                {!isAvailable && (
+                                                    <span className="absolute inset-0 flex items-center justify-center">
+                                                        <span className="w-10 h-0.5 bg-neutral-400 rotate-45 opacity-70" />
+                                                    </span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Size Selection */}
                         <div className="mb-6">
                             <div className="flex items-center justify-between mb-3">
@@ -226,14 +330,15 @@ const ProductDetailPage = () => {
                             </div>
                             <div className="grid grid-cols-4 gap-3">
                                 {uniqueSizes.map((size) => {
-                                    const variant = product.variants.find((v) => v.size === size);
-                                    const isSelected = selectedVariant?.size === size;
-                                    const isAvailable = variant?.inStock;
+                                    const variantForColor = product.variants.find((v) => v.size === size && v.color === selectedColor);
+                                    const variant = variantForColor || product.variants.find((v) => v.size === size);
+                                    const isSelected = selectedSize === size;
+                                    const isAvailable = variantForColor ? variantForColor.inStock : false;
 
                                     return (
                                         <button
                                             key={size}
-                                            onClick={() => isAvailable && setSelectedVariant(variant)}
+                                            onClick={() => isAvailable && handleSizeChange(size)}
                                             disabled={!isAvailable}
                                             className={`py-3 px-4 border-2 rounded-md font-medium transition-all ${isSelected
                                                     ? 'border-neutral-900 bg-neutral-900 text-white'

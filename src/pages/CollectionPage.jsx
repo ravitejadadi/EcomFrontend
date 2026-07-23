@@ -125,13 +125,13 @@ const CollectionPage = () => {
             </div>
 
             {/* Filters & Sort */}
-            <div className="flex flex-col md:flex-row gap-4 mb-8 pb-8 border-b border-neutral-200">
+            <div className="flex justify-between items-center gap-4 mb-8 pb-8 border-b border-neutral-200">
                 {/* Price Filter */}
-                <div className="relative">
+                <div className="relative flex-1 sm:flex-initial">
                     <select
                         value={filters.priceRange}
                         onChange={(e) => setFilters({ ...filters, priceRange: e.target.value })}
-                        className="appearance-none bg-white border border-neutral-300 rounded-md px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-neutral-900 cursor-pointer"
+                        className="w-full appearance-none bg-white border border-neutral-300 rounded-md px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-neutral-900 cursor-pointer text-sm sm:text-base"
                     >
                         <option value="all">All Prices</option>
                         <option value="under-2000">Under ₹2,000</option>
@@ -139,17 +139,17 @@ const CollectionPage = () => {
                         <option value="above-5000">Above ₹5,000</option>
                     </select>
                     <ChevronDown
-                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-500"
                         size={16}
                     />
                 </div>
 
                 {/* Sort */}
-                <div className="relative ml-auto">
+                <div className="relative flex-1 sm:flex-initial sm:ml-auto">
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="appearance-none bg-white border border-neutral-300 rounded-md px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-neutral-900 cursor-pointer"
+                        className="w-full appearance-none bg-white border border-neutral-300 rounded-md px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-neutral-900 cursor-pointer text-sm sm:text-base"
                     >
                         <option value="featured">Featured</option>
                         <option value="newest">Newest</option>
@@ -157,7 +157,7 @@ const CollectionPage = () => {
                         <option value="price-high-low">Price: High to Low</option>
                     </select>
                     <ChevronDown
-                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-500"
                         size={16}
                     />
                 </div>
