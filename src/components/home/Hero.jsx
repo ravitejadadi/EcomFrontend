@@ -74,7 +74,8 @@ const Hero = ({ slides = [] }) => {
                 </div>
 
                 {/* Content Overlay */}
-                <div className="relative h-full container-custom flex items-center bg-black/35">
+                <div className="absolute inset-0 bg-black/35 pointer-events-none" />
+                <div className="relative h-full container-custom flex items-center">
                     <div className={`max-w-2xl ${slide.theme === 'dark' ? 'text-white' : 'text-neutral-900'}`}>
                         {/* Badge */}
                         <div className="inline-block mb-1.5 md:mb-2.5">

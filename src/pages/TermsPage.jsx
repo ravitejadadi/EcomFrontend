@@ -82,7 +82,7 @@ const TermsPage = () => (
                 </Section>
 
                 <Section title="11. Governing Law">
-                    <p>These Terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Mumbai, Maharashtra. If any provision of these Terms is found to be unenforceable, the remaining provisions shall continue in full force.</p>
+                    <p>These Terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Tirupathi, Andhra Pradesh. If any provision of these Terms is found to be unenforceable, the remaining provisions shall continue in full force.</p>
                 </Section>
 
                 <Section title="12. Changes to Terms">
@@ -93,9 +93,9 @@ const TermsPage = () => (
                     <p>For questions about these Terms:</p>
                     <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 mt-2">
                         <p><strong>THE ELEGANT — Legal Team</strong></p>
-                        <p>Email: legal@theelegant.in</p>
-                        <p>Phone: 1800-123-4567</p>
-                        <p>Address: Mumbai, Maharashtra, India — 400001</p>
+                        <p>Email: theelegant2327@gmail.com</p>
+                        <p>Phone: 8125632327</p>
+                        <p>Address: Tirupathi, Andhra Pradesh, India — 517501</p>
                     </div>
                 </Section>
             </div>

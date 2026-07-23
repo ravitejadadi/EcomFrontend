@@ -18,9 +18,9 @@ const ContactPage = () => {
     };
 
     const contactInfo = [
-        { icon: Phone, label: 'Customer Service', value: '1800-123-4567', sub: 'Mon–Sat, 9AM–9PM IST' },
-        { icon: Mail, label: 'Email Us', value: 'support@theelegant.in', sub: 'Response within 24 hours' },
-        { icon: MapPin, label: 'Head Office', value: 'Mumbai, Maharashtra, India', sub: '400001' },
+        { icon: Phone, label: 'Customer Service', value: '8125632327', sub: 'Mon–Sat, 9AM–9PM IST' },
+        { icon: Mail, label: 'Email Us', value: 'theelegant2327@gmail.com', sub: 'Response within 24 hours' },
+        { icon: MapPin, label: 'Head Office', value: 'Tirupathi, Andhra Pradesh, India', sub: '517501' },
         { icon: Clock, label: 'Working Hours', value: 'Mon–Sat: 9AM–9PM', sub: 'Sun: 11AM–6PM' },
     ];
 

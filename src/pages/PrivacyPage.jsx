@@ -78,7 +78,7 @@ const PrivacyPage = () => (
                         <li>Opt out of marketing communications</li>
                         <li>Lodge a complaint with the Data Protection Board</li>
                     </ul>
-                    <p>To exercise these rights, contact us at privacy@theelegant.in</p>
+                    <p>To exercise these rights, contact us at theelegant2327@gmail.com</p>
                 </Section>
 
                 <Section title="7. Children's Privacy">
@@ -93,9 +93,9 @@ const PrivacyPage = () => (
                     <p>For privacy-related questions or concerns:</p>
                     <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 mt-2">
                         <p><strong>THE ELEGANT — Privacy Team</strong></p>
-                        <p>Email: privacy@theelegant.in</p>
-                        <p>Phone: 1800-123-4567</p>
-                        <p>Address: Mumbai, Maharashtra, India — 400001</p>
+                        <p>Email: theelegant2327@gmail.com</p>
+                        <p>Phone: 8125632327</p>
+                        <p>Address: Tirupathi, Andhra Pradesh, India — 517501</p>
                     </div>
                 </Section>
             </div>

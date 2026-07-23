@@ -133,12 +133,18 @@ const Footer = () => {
                   <p className="text-white font-semibold mb-1">
                     Customer Service
                   </p>
-                  <p>1800-123-4567</p>
+                  <p>8125632327</p>
                   <p className="text-xs mt-1">Mon-Sat: 9AM-9PM</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Mail size={16} className="mt-1 flex-shrink-0" />
+                <div>
+                  <p className="text-white font-semibold mb-1">
+                    Email Us
+                  </p>
+                  <p>theelegant2327@gmail.com</p>
+                </div>
               </li>
             </ul>
           </div>
@@ -170,14 +176,14 @@ const Footer = () => {
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
               <div className="flex items-center gap-2">
                 <MapPin size={14} />
-                <span>INDIA</span>
+                <span>Tirupathi</span>
               </div>
               <div className="text-center md:text-right">
                 <p>
                   &copy; {new Date().getFullYear()} THE ELEGANT. All Rights
                   Reserved.
                 </p>
-                <p className="mt-1">THE ELEGANT India | Forever Faster</p>
+                <p className="mt-1">THE ELEGANT Tirupathi | Forever Faster</p>
               </div>
             </div>
           </div>
